@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test Intro Page</title>
+    <!-- External CSS loaded via magiintro:// protocol (relative path) -->
+    <link rel="stylesheet" href="./assets/style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Test Intro Page</h1>
+      <p class="subtitle">
+        Loaded via <code>magiintro://test/index.html</code>
+      </p>
+
+      <!-- Resource loading checks -->
+      <div class="checks">
+        <div class="check" id="check-html">&#10003; HTML loaded</div>
+        <div class="check" id="check-css">CSS loaded</div>
+        <div class="check" id="check-js">JS loaded</div>
+        <div class="check" id="check-img">Image (SVG) loaded</div>
+        <div class="check" id="check-bg">CSS background image loaded</div>
+        <div class="check" id="check-props">wujie props connected</div>
+      </div>
+
+      <!-- Content area with external image -->
+      <div class="content">
+        <!-- External SVG image loaded via magiintro:// protocol -->
+        <img src="./assets/logo.svg" alt="Logo" class="logo" id="logo" />
+        <div class="info">
+          <p>Route Key: <strong id="route-key">N/A</strong></p>
+          <p>Parent message: <strong id="parent-msg">N/A</strong></p>
+          <p>Counter: <strong id="counter">0</strong></p>
+          <button id="send-btn">Send message to parent</button>
+        </div>
+      </div>
+
+      <!-- Sandbox isolation test -->
+      <div class="isolation-test">
+        <h3>Sandbox Isolation Test</h3>
+        <p>Attempting to access <code>window.parent.api</code> (should fail):</p>
+        <div id="isolation-result" class="isolation-result">Testing...</div>
+      </div>
+    </div>
+
+    <!-- External JS loaded via magiintro:// protocol (relative path) -->
+    <script src="./assets/app.js"></script>
+  </body>
+</html>
