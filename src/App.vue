@@ -91,7 +91,7 @@ import WujieVue from 'wujie-vue3'
 
 // In the PARENT app, the bus is accessed via WujieVue.bus (not window.$wujie,
 // which is only set inside the child iframe's context).
-const wujieBus = WujieVue.bus
+const wujieBus: WujieEventBus = WujieVue.bus
 
 interface IntroPageInfo {
   routeKey: string
@@ -270,7 +270,7 @@ function reload(): void {
 function cleanupMountedBusListeners(): void {
   if (wujieBus) {
     for (const l of mountedBusListeners.value) {
-      try { wujieBus.$off(l.event, l.cb as any) } catch {}
+      try { wujieBus.$off(l.event, l.cb) } catch {}
     }
   }
   mountedBusListeners.value = []
@@ -353,22 +353,22 @@ onMounted(async () => {
 
   // Intercept console.log/error/warn to capture wujie's internal errors
   // (WujieVue's startApp try/catch logs errors to console but doesn't call loadError)
-  const origLog = console.log
-  const origError = console.error
-  const origWarn = console.warn
-  console.log = (...args: any[]) => {
+  const origLog = console.log.bind(console)
+  const origError = console.error.bind(console)
+  const origWarn = console.warn.bind(console)
+  console.log = (...args: unknown[]) => {
     origLog(...args)
     const text = args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ')
     if (text.toLowerCase().includes('wujie') || text.toLowerCase().includes('error') || text.toLowerCase().includes('fail')) {
       addLog('error', `[console.log] ${text}`)
     }
   }
-  console.error = (...args: any[]) => {
+  console.error = (...args: unknown[]) => {
     origError(...args)
     const text = args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ')
     addLog('error', `[console.error] ${text}`)
   }
-  console.warn = (...args: any[]) => {
+  console.warn = (...args: unknown[]) => {
     origWarn(...args)
     const text = args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ')
     if (text.toLowerCase().includes('wujie') || text.toLowerCase().includes('deprecat')) {
