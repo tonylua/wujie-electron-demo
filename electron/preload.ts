@@ -4,11 +4,12 @@ import { contextBridge, ipcRenderer } from 'electron'
 // The wujie iframe sandbox CANNOT access this directly —
 // communication with the child app is via wujie props only.
 contextBridge.exposeInMainWorld('api', {
-  /** Check if an intro page resource is available for a given routeKey */
   getIntroPageStatus: (routeKey: string) =>
     ipcRenderer.invoke('intro-page-get-status', routeKey),
 
-  /** Open an external URL (e.g., purchase link) — validated in main process */
+  listIntroPages: () =>
+    ipcRenderer.invoke('intro-page-list'),
+
   openExternal: (url: string) =>
     ipcRenderer.invoke('open-external', url),
 })

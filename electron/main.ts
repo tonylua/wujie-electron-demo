@@ -165,6 +165,30 @@ function registerIpcHandlers(): void {
     }
   })
 
+  // List all available intro pages (route keys with current pointer + index.html)
+  ipcMain.handle('intro-page-list', () => {
+    const introPagesRoot = getIntroPagesRoot()
+    try {
+      const entries = fs.readdirSync(introPagesRoot, { withFileTypes: true })
+      const pages: { routeKey: string; available: boolean }[] = []
+      for (const entry of entries) {
+        if (!entry.isDirectory()) continue
+        const routeKey = entry.name
+        const currentFile = path.join(introPagesRoot, routeKey, 'current')
+        try {
+          const version = fs.readFileSync(currentFile, 'utf-8').trim()
+          const indexExists = fs.existsSync(path.join(introPagesRoot, routeKey, version, 'index.html'))
+          pages.push({ routeKey, available: indexExists })
+        } catch {
+          pages.push({ routeKey, available: false })
+        }
+      }
+      return pages
+    } catch {
+      return []
+    }
+  })
+
   // Open external URL (e.g., purchase link) — child cannot call this directly
   ipcMain.handle('open-external', (_event, url: string) => {
     if (typeof url === 'string' && (url.startsWith('https://') || url.startsWith('http://'))) {
