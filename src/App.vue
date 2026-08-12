@@ -110,9 +110,15 @@ const busEvents = ref<string[]>([])
 const availablePages = ref<IntroPageInfo[]>([])
 const mountedBusListeners = ref<{ event: string; cb: Function }[]>([])
 
-const PRODUCT_INFO: Record<string, any> = {
+const PRODUCT_INFO: Record<string, { name: string }> = {
   test: { name: 'Test Page' },
   alpha: { name: 'Alpha Module' },
+  'vue-test': { name: 'Vue SFC Test' },
+}
+
+// shopItem for Vue sub-app provide/inject verification
+const SHOP_ITEMS: Record<string, { name: string; purchaseLink: string }> = {
+  'vue-test': { name: 'MagicPen', purchaseLink: 'https://example.com/buy-magicpen' },
 }
 
 // Simple i18n for parent UI
@@ -178,11 +184,16 @@ const wujiePlugins = [{
 
 const wujieProps = computed(() => ({
   productInfo: PRODUCT_INFO[routeKey.value] || null,
+  // shopItem for Vue sub-app provide/inject verification
+  shopItem: SHOP_ITEMS[routeKey.value] || null,
   locale: locale.value,
   isDark: isDark.value,
   onMessage: (msg: unknown) => {
     const m = msg as { type?: string; text?: string; routeKey?: string }
     addLog('info', `Child → Parent: ${JSON.stringify(msg)}`)
+    if (m?.type === 'vue-boot') {
+      addLog('success', `Vue sub-app booted: ${JSON.stringify(m)}`)
+    }
     if (m?.type === 'ready') {
       addLog('success', `Intro page ready: ${m.routeKey}`)
     }
@@ -196,7 +207,6 @@ const wujieProps = computed(() => ({
   onNavigate: (target: string) => {
     addLog('info', `Child requested navigation: ${target}`)
   },
-  bus: undefined as any,
 }))
 
 function addLog(type: string, text: string): void {
